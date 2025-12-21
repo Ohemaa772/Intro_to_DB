@@ -1,41 +1,25 @@
--- Create Authors table
-CREATE TABLE IF NOT EXISTS Authors (
-    author_id INT PRIMARY KEY,
-    author_name VARCHAR(215)
-);
+import mysql.connector
 
--- Create Books table
-CREATE TABLE IF NOT EXISTS Books (
-    book_id INT PRIMARY KEY,
-    title VARCHAR(130),
-    author_id INT,
-    price DOUBLE,
-    publication_date DATE,
-    FOREIGN KEY (author_id) REFERENCES Authors(author_id)
-);
+try:
+    # Connect to MySQL server (no database yet)
+    connection = mysql.connector.connect(
+        host="localhost",       # Your MySQL host
+        user="root",            # Your MySQL username
+        password="yourpassword" # Your MySQL password
+    )
 
--- Create Customers table
-CREATE TABLE IF NOT EXISTS Customers (
-    customer_id INT PRIMARY KEY,
-    customer_name VARCHAR(215),
-    email VARCHAR(215),
-    address TEXT
-);
+    if connection.is_connected():
+        cursor = connection.cursor()
+        # Create the database if it doesn't exist
+        cursor.execute("CREATE DATABASE IF NOT EXISTS alx_book_store;")
+        print("Database 'alx_book_store' created successfully!")
 
--- Create Orders table
-CREATE TABLE IF NOT EXISTS Orders (
-    order_id INT PRIMARY KEY,
-    customer_id INT,
-    order_date DATE,
-    FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
-);
+except mysql.connector.Error as e:
+    print(f"Error while connecting to MySQL: {e}")
 
--- Create Order_Details table
-CREATE TABLE IF NOT EXISTS Order_Details (
-    orderdetailid INT PRIMARY KEY,
-    order_id INT,
-    book_id INT,
-    quantity DOUBLE,
-    FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-    FOREIGN KEY (book_id) REFERENCES Books(book_id)
-);
+finally:
+    # Close the connection
+    if 'cursor' in locals():
+        cursor.close()
+    if 'connection' in locals() and connection.is_connected():
+        connection.close()
